@@ -1,0 +1,330 @@
+openapi: 3.0.3
+info:
+  title: microservice for user management - OpenAPI 3.0
+  description: |-
+    This microservice is designed for user management and belongs to the BODGEN microservices group which implements systems for warehouse management.
+
+  version: 1.0.0
+x-java-validation-api: jakarta
+tags:
+  - name: user
+    description: Operations about user
+paths:
+  /user:
+    post:
+      tags:
+        - user
+      summary: Add new user
+      description: Add a new user to the database
+      operationId: addUser
+      requestBody:
+        description: structure user creation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        "405":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    get:
+      tags:
+        - user
+      summary: Consult the list of users
+      description: Return the llist of users.
+      operationId: listUsers
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /user/{id}:
+    put:
+      tags:
+        - user
+      summary: Update user data
+      description: Update user data using id.
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          description: User identifier
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existent user in the database
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        "400":
+          description: Invalid ID user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "405":
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      tags:
+        - user
+      summary: Search for a user by  their identifier.
+      description: Returned to the user when it exists.
+      operationId: getUserById
+      parameters:
+        - name: id
+          in: path
+          description: User identifier
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        "400":
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - user
+      summary: Delete a user
+      description: Delete a user
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          description: User identifier
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      responses:
+        "400":
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    UserRequest:
+      required:
+        - names
+        - surNames
+        - userName
+        - userStatus
+        - password
+      type: object
+      properties:
+        names:
+          type: string
+          description: Names of user
+          example: Josue Elliot
+        surNames:
+          type: string
+          description: Surname of user
+          example: Rivera Flores
+        userName:
+          type: string
+          description: user for login
+          example: josueelliot
+        documentType:
+          type: string
+          description: Document type
+          example: DNI
+        documentNumber:
+          type: string
+          description: Document number
+          minLength: 8
+          maxLength: 8
+          pattern: ^\d+$
+          example: "76256325"
+        address:
+          type: string
+          description: User address
+          example: Av. La republica
+        phone:
+          type: string
+          description: phone
+          minLength: 9
+          maxLength: 9
+          pattern: ^\d+$
+          example: "935652458"
+        email:
+          type: string
+          description: email
+          format: email
+          example: josueelliot@hotmail.com
+        role:
+          type: string
+          description: rol the user
+          enum:
+            - admin
+            - user
+          example: admin
+        password:
+          type: string
+          description: password of user
+          example: 'ElliottR25/**'
+          #pattern: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$
+        userStatus:
+          type: integer
+          description: User Status
+          format: int32
+          example: 1
+      xml:
+        name: UserRequest
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 50
+          example: 63ab4d5b259e366938611208
+        names:
+          type: string
+          description: Names user
+          example: Josue Elliot
+        surNames:
+          type: string
+          description: Surname user
+          example: Rivera Flores
+        userName:
+          type: string
+          description: user for login
+          example: josueelliot
+        documentType:
+          type: string
+          description: Document type.
+          example: DNI
+        documentNumber:
+          type: string
+          description: Document number
+          minLength: 8
+          maxLength: 8
+          example: "76256325"
+        address:
+          type: string
+          description: User address
+          example: Av. La republica
+        phone:
+          type: string
+          description: phone
+          example: "940000000"
+        email:
+          type: string
+          description: email
+          example: josue_elliot@hotmail.com
+        role:
+          type: string
+          description: rol the user
+          enum:
+            - admin
+            - user
+          example: admin
+        userStatus:
+          type: integer
+          description: User Status
+          format: int32
+          example: 1
+      xml:
+        name: UserResponse
+    Error:
+      type: object
+      properties:
+        code:
+          description: Error code
+          type: string
+        status:
+          description: http status
+          type: integer
+          format: int32
+        type:
+          type: string
+          description: Type of error
+        message:
+          type: string
+          description: Message of error

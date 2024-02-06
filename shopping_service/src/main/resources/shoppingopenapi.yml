@@ -1,0 +1,330 @@
+openapi: 3.0.3
+info:
+  title: microservice for Shopping management - OpenAPI 3.0
+  description: |-
+    This microservice is designed for shopping management and belongs to the BODGEN microservices group which implements systems for warehouse management.
+
+  version: 1.0.0
+x-java-validation-api: jakarta
+tags:
+  - name: shopping
+    description: Operations about shopping
+paths:
+  /shopping:
+    post:
+      tags:
+        - shopping
+      summary: Add new shopping
+      description: Add a new shopping to the database
+      operationId: addShopping
+      requestBody:
+        description: structure shopping creation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShoppingRequest'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/ShoppingRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ShoppingRequest'
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShoppingResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ShoppingResponse'
+        "405":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    get:
+      tags:
+        - shopping
+      summary: Consult the list of shopping
+      description: Return the list of Shopping.
+      operationId: listShopping
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShoppingResponse'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShoppingResponse'
+        "404":
+          description: Shopping not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /user/{id}:
+    put:
+      tags:
+        - shopping
+      summary: Update shopping data
+      description: Update Shopping data using id.
+      operationId: updateShopping
+      parameters:
+        - name: id
+          in: path
+          description: Shopping identifier
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existent shopping in the database
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShoppingRequest'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/ShoppingRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ShoppingRequest'
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShoppingResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ShoppingResponse'
+        "400":
+          description: Invalid ID shopping
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: Shopping not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "405":
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      tags:
+        - shopping
+      summary: Search for a shopping by  their identifier.
+      description: Returned to the shopping when it exists.
+      operationId: getShoppingById
+      parameters:
+        - name: id
+          in: path
+          description: Shopping identifier
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShoppingResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ShoppingResponse'
+        "400":
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: Shopping not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - shopping
+      summary: Delete a Shopping
+      description: Delete a Shopping
+      operationId: deleteShopping
+      parameters:
+        - name: id
+          in: path
+          description: User identifier
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      responses:
+        "400":
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    ShoppingRequest:
+      required:
+        - names
+        - surNames
+        - userName
+        - userStatus
+        - password
+      type: object
+      properties:
+        names:
+          type: string
+          description: Names of user
+          example: Josue Elliot
+        surNames:
+          type: string
+          description: Surname of user
+          example: Rivera Flores
+        userName:
+          type: string
+          description: user for login
+          example: josueelliot
+        documentType:
+          type: string
+          description: Document type
+          example: DNI
+        documentNumber:
+          type: string
+          description: Document number
+          minLength: 8
+          maxLength: 8
+          pattern: ^\d+$
+          example: "76256325"
+        address:
+          type: string
+          description: User address
+          example: Av. La republica
+        phone:
+          type: string
+          description: phone
+          minLength: 9
+          maxLength: 9
+          pattern: ^\d+$
+          example: "935652458"
+        email:
+          type: string
+          description: email
+          format: email
+          example: josueelliot@hotmail.com
+        role:
+          type: string
+          description: rol the user
+          enum:
+            - admin
+            - user
+          example: admin
+        password:
+          type: string
+          description: password of user
+          example: 'ElliottR25/**'
+          #pattern: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$
+        userStatus:
+          type: integer
+          description: User Status
+          format: int32
+          example: 1
+      xml:
+        name: ShoppingRequest
+    ShoppingResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 50
+          example: 63ab4d5b259e366938611208
+        names:
+          type: string
+          description: Names user
+          example: Josue Elliot
+        surNames:
+          type: string
+          description: Surname user
+          example: Rivera Flores
+        userName:
+          type: string
+          description: user for login
+          example: josueelliot
+        documentType:
+          type: string
+          description: Document type.
+          example: DNI
+        documentNumber:
+          type: string
+          description: Document number
+          minLength: 8
+          maxLength: 8
+          example: "76256325"
+        address:
+          type: string
+          description: User address
+          example: Av. La republica
+        phone:
+          type: string
+          description: phone
+          example: "940000000"
+        email:
+          type: string
+          description: email
+          example: josue_elliot@hotmail.com
+        role:
+          type: string
+          description: rol the user
+          enum:
+            - admin
+            - user
+          example: admin
+        userStatus:
+          type: integer
+          description: User Status
+          format: int32
+          example: 1
+      xml:
+        name: ShoppingResponse
+    Error:
+      type: object
+      properties:
+        code:
+          description: Error code
+          type: string
+        status:
+          description: http status
+          type: integer
+          format: int32
+        type:
+          type: string
+          description: Type of error
+        message:
+          type: string
+          description: Message of error

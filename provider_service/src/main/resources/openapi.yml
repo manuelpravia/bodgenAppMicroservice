@@ -1,0 +1,317 @@
+openapi: 3.0.3
+info:
+  title: microservice for provider management - OpenAPI 3.0
+  description: |-
+    This microservice is designed for provider management and belongs to the BODGEN microservices group which implements systems for warehouse management.
+
+  version: 1.0.0
+x-java-validation-api: jakarta
+tags:
+  - name: provider
+    description: Operations about provider
+paths:
+  /provider:
+    post:
+      tags:
+        - provider
+      summary: Add new provider
+      description: Add a new provider to the database
+      operationId: addProvider
+      requestBody:
+        description: structure provider creation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProviderRequest'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/ProviderRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProviderRequest'
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ProviderResponse'
+        "405":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    get:
+      tags:
+        - provider
+      summary: Consult the list of providers
+      description: Return the list of providers.
+      operationId: listProvider
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProviderResponse'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProviderResponse'
+        "404":
+          description: Providers not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /provider/{id}:
+    put:
+      tags:
+        - provider
+      summary: Update provider data
+      description: Update provider data using id.
+      operationId: updateProvider
+      parameters:
+        - name: id
+          in: path
+          description: Provider identifier
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existent Provider in the database
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProviderRequest'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/ProviderRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProviderRequest'
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ProviderResponse'
+        "400":
+          description: Invalid ID provider
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: Provider not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "405":
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      tags:
+        - provider
+      summary: Search for a provider by  their identifier.
+      description: Returned to the provider when it exists.
+      operationId: getProviderById
+      parameters:
+        - name: id
+          in: path
+          description: Provider identifier
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ProviderResponse'
+        "400":
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: Provider not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - provider
+      summary: Delete a Provider
+      description: Delete a provider
+      operationId: deleteProvider
+      parameters:
+        - name: id
+          in: path
+          description: Provider identifier
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      responses:
+        "400":
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    ProviderRequest:
+      required:
+        - names
+        - surNames
+        - documentNumber
+        - phone
+      type: object
+      properties:
+        names:
+          type: string
+          description: Names of user
+          example: Josue Elliot Efrain
+        surNames:
+          type: string
+          description: Surname of user
+          example: Rivera Flores
+        documentType:
+          type: string
+          description: Document type
+          example: DNI
+        documentNumber:
+          type: string
+          description: Document number
+          minLength: 8
+          maxLength: 8
+          pattern: ^\d+$
+          example: "76256325"
+        address:
+          type: string
+          description: User address
+          example: Av. La republica
+        phone:
+          type: string
+          description: phone
+          minLength: 9
+          maxLength: 9
+          pattern: ^\d+$
+          example: "945625982"
+        email:
+          type: string
+          description: email
+          format: email
+          example: josueelliot@hotmail.com
+        userStatus:
+          type: integer
+          description: Provider Status
+          format: int32
+          example: 1
+        createdAt:
+          type: string
+          format: date-time
+          description:  Date of creation
+          example: '2024-02-06T10:30:00Z'
+      xml:
+        name: ProviderRequest
+    ProviderResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 50
+          example: 63ab4d5b259e366938611208
+        names:
+          type: string
+          description: Names provider
+          example: Josue Elliot
+        surNames:
+          type: string
+          description: Surname provider
+          example: Rivera Flores
+        documentType:
+          type: string
+          description: Document type.
+          example: DNI
+        documentNumber:
+          type: string
+          description: Document number
+          minLength: 8
+          maxLength: 8
+          pattern: ^\d+$
+          example: "76256325"
+        address:
+          type: string
+          description: Provider address
+          example: Av. La republica
+        phone:
+          type: string
+          description: phone
+          minLength: 9
+          maxLength: 9
+          pattern: ^\d+$
+          example: "956235147"
+        email:
+          type: string
+          description: email
+          pattern: email
+          example: josueelliot@hotmail.com
+        userStatus:
+          type: integer
+          description: Provider Status
+          format: int32
+          example: 1
+        createdAt:
+          type: string
+          format: date-time
+          description:  Date of creation
+          example: '2019-06-04T12:58:19Z'
+      xml:
+        name: ProviderResponse
+    Error:
+      type: object
+      properties:
+        code:
+          description: Error code
+          type: string
+        status:
+          description: http status
+          type: integer
+          format: int32
+        type:
+          type: string
+          description: Type of error
+        message:
+          type: string
+          description: Message of error

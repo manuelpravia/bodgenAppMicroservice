@@ -1,0 +1,309 @@
+openapi: 3.0.3
+info:
+  title: microservice for Product management - OpenAPI 3.0
+  description: |-
+    This microservice is designed for product management and belongs to the BODGEN microservices group which implements systems for warehouse management.
+
+  version: 1.0.0
+
+
+tags:
+  - name: product
+    description: Operations about product
+paths:
+  /product:
+    post:
+      tags:
+        - product
+      summary: Add new product
+      description: Add a new product to the database
+      operationId: addProduct
+      requestBody:
+        description: structure product creation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRequest'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/ProductRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProductRequest'
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        "405":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    get:
+      tags:
+        - product
+      summary: Consult the list of products
+      description: Return the list of products.
+      operationId: listProducts
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductResponse'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductResponse'
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /product/{id}:
+    put:
+      tags:
+        - product
+      summary: Update product data
+      description: Update product data using id.
+      operationId: updateProduct
+      parameters:
+        - name: id
+          in: path
+          description: Product identifier
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existent product in the database
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRequest'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/ProductRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProductRequest'
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        "400":
+          description: Invalid ID user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "405":
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      tags:
+        - product
+      summary: Search for a product by  their identifier.
+      description: Returned to the product when it exists.
+      operationId: getProductById
+      parameters:
+        - name: id
+          in: path
+          description: Product identifier
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        "400":
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - product
+      summary: Delete a product
+      description: Delete a product
+      operationId: deleteProduct
+      parameters:
+        - name: id
+          in: path
+          description: Product identifier
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      responses:
+        "400":
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    ProductRequest:
+      required:
+        - name
+        - description
+        - price
+        - presentation
+        - categoryId
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of product
+          example: Agua Cielo
+        description:
+          type: string
+          description: Description of product
+          example: Agua de mesa sin gas
+        price:
+          type: number
+          format: double
+          description: price for product
+          example: 2.60
+        stock:
+          type: number
+          format: Integer
+          description: Stock of product
+          example: 40
+        categoryId:
+          type: string
+          description: Category identifier
+          example: "65c193ea0d9d2c1696d3329c"
+        code:
+          type: string
+          minLength: 6
+          maxLength: 6
+          description: Code of product
+          example: "524AF"
+        presentation:
+          type: string
+          description: presentation or version of the product
+          example: Unit, pakage o box
+        image:
+          type: string
+          description: image url
+          example: http://localhost:8080/img/avena.jpg
+      xml:
+        name: ProductRequest
+    ProductResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 50
+          example: 63ab4d5b259e366938611208
+        name:
+          type: string
+          description: Name of product
+          example: Agua Cielo
+        description:
+          type: string
+          description: Description of product
+          example: Agua de mesa sin gas
+        price:
+          type: number
+          format: double
+          description: price for product
+          example: 2.60
+        registrationDate:
+          type: string
+          format: date-time
+          description: Date of creation
+          example: "2024-02-06T10:30:00Z"
+        updateDate:
+          type: string
+          format: date-time
+          description: Date of modification
+          example: "2024-02-06T10:30:00Z"
+        stock:
+          type: number
+          format: Integer
+          description: Stock of product
+          example: 40
+        categoryId:
+          type: string
+          description: Category identifier
+          example: "65c193ea0d9d2c1696d3329c"
+        code:
+          type: string
+          description: Code of product
+          example: "524AF"
+        presentation:
+          type: string
+          description: presentation or version of the product
+          example: Unit, pakage o box
+        image:
+          type: string
+          description: image url
+          example: http://localhost:8080/img/avena.jpg
+      xml:
+        name: ProductResponse
+    Error:
+      type: object
+      properties:
+        code:
+          description: Error code
+          type: string
+        status:
+          description: http status
+          type: integer
+          format: int32
+        type:
+          type: string
+          description: Type of error
+        message:
+          type: string
+          description: Message of error
