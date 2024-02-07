@@ -1,0 +1,447 @@
+openapi: 3.0.3
+info:
+  title: microservice for Sales management - OpenAPI 3.0
+  description: |-
+    This microservice is designed for sales management and belongs to the BODGEN microservices group which implements systems for warehouse management.
+
+  version: 1.0.0
+
+tags:
+  - name: sales
+    description: Operations about shopping
+paths:
+  /sale:
+    post:
+      tags:
+        - sales
+      summary: Add new sales
+      description: Add a new sale to the database
+      operationId: addSale
+      requestBody:
+        description: structure sale creation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaleRequest'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/SaleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SaleRequest'
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaleResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/SaleResponse'
+        "405":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    get:
+      tags:
+        - sales
+      summary: Consult the list of sale
+      description: Return the list of sale.
+      operationId: listSale
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SaleResponse'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SaleResponse'
+        "404":
+          description: Sale not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /sale/{id}:
+    put:
+      tags:
+        - sales
+      summary: Update sale data
+      description: Update sale data using id.
+      operationId: updateSale
+      parameters:
+        - name: id
+          in: path
+          description: Sale identifier
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existent sale in the database
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaleRequest'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/SaleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SaleRequest'
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaleResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/SaleResponse'
+        "400":
+          description: Invalid ID sale
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: sale not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "405":
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      tags:
+        - sales
+      summary: Search for a sale by  their identifier.
+      description: Returned to the sale when it exists.
+      operationId: getSaleById
+      parameters:
+        - name: id
+          in: path
+          description: sale identifier
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaleResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/SaleResponse'
+        "400":
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: Sale not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - sales
+      summary: Delete a Sale
+      description: Delete a sale
+      operationId: deleteSale
+      parameters:
+        - name: id
+          in: path
+          description: Sale identifier
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      responses:
+        "400":
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    SaleRequest:
+      required:
+        - customerDocument
+        - paymentType
+        - userId
+        - detail
+      type: object
+      properties:
+        saleCode:
+          type: string
+          description: Sales code
+          example: 00000254
+        customerName:
+          type: string
+          description: Customer names
+          example: Josue Elliot
+        customerDocument:
+          type: string
+          description: customer document number
+          example: 75265896
+        allocateAmount:
+          type: number
+          format: double
+          description: Allocated Amount
+          example: 400
+        refundAmount:
+          type: number
+          format: double
+          description: Reund Amount
+          example: 25.30
+        igv:
+          type: number
+          format: double
+          description: product tax
+          example: 128.60
+        paymentType:
+          type: string
+          default: EFECTIVO
+          example: EFECTIVO
+          enum:
+            - EFECTIVO
+            - TARJETA
+            - TRANFERENCIA
+          description: Payment Type
+        saleStatus:
+          type: string
+          description: Sale Status
+          default: PENDING
+          example: COMPLETE
+          enum:
+            - PENDING
+            - COMPLETE
+            - CANCELED
+        priceFinal:
+          type: number
+          format: double
+          description: Price of the shopping
+          example: 128.60
+        userId:
+          type: string
+          description: user identifier
+          example: 63ab4d5b259e366938611208
+        detail:
+          type: array
+          description: details of products sold
+          items:
+            $ref: '#/components/schemas/DetailRequest'
+      xml:
+        name: SaleRequest
+
+    SaleResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 50
+          example: 63ab4d5b259e366938611208
+        saleCode:
+          type: string
+          description: Sales code
+          example: 00000254
+        customerName:
+          type: string
+          description: Customer names
+          example: Josue Elliot
+        customerDocument:
+          type: string
+          description: customer document number
+          example: 75265896
+        allocateAmount:
+          type: number
+          format: double
+          description: Allocated Amount
+          example: 400
+        refundAmount:
+          type: number
+          format: double
+          description: Reund Amount
+          example: 25.30
+        igv:
+          type: number
+          format: double
+          description: product tax
+          example: 128.60
+        paymentType:
+          type: string
+          default: EFECTIVO
+          example: EFECTIVO
+          enum:
+            - EFECTIVO
+            - TARJETA
+            - TRANFERENCIA
+          description: Payment Type
+        priceFinal:
+          type: number
+          format: double
+          description: Price of the shopping
+          example: 128.60
+        saleStatus:
+          type: string
+          description: Sale Status
+          default: PENDING
+          example: COMPLETE
+          enum:
+            - PENDING
+            - COMPLETE
+            - CANCELED
+        user:
+          $ref: '#/components/schemas/User'
+        Detail:
+          type: array
+          items:
+            $ref: '#/components/schemas/DetailResponse'
+      xml:
+        name: SaleResponse
+    DetailRequest:
+      type: object
+      required:
+        - productCode
+        - quantities
+      properties:
+        productCode:
+          type: string
+          description: Product code
+          example: 63AB4D
+        productName:
+          type: string
+          description: Name of product
+          example: Agua Cielo
+        quantities:
+          type: number
+          description: product quantity
+          example: 5
+        subTotal:
+          type: number
+          format: double
+          description: price for product
+          example: 28.60
+      xml:
+        name: DetailRequest
+    DetailResponse:
+      type: object
+      properties:
+        quantities:
+          type: number
+          description: product quantity
+          example: 5
+        subTotal:
+          type: number
+          format: double
+          description: price for product
+          example: 28.60
+        prducts:
+          $ref: '#/components/schemas/Product'
+      xml:
+        name: DetailResponse
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 50
+          example: 63ab4d5b259e366938611208
+        name:
+          type: string
+          description: Name of product
+          example: Agua Cielo
+        description:
+          type: string
+          description: Description of product
+          example: Agua de mesa sin gas
+        price:
+          type: number
+          format: double
+          description: price for product
+          example: 2.60
+        categoryId:
+          type: string
+          description: Category identifier
+          example: "65c193ea0d9d2c1696d3329c"
+        code:
+          type: string
+          description: Code of product
+          example: "524AF"
+        presentation:
+          type: string
+          description: presentation or version of the product
+          example: Unit, pakage o box
+      xml:
+        name: Product
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 50
+          example: 63ab4d5b259e366938611208
+        names:
+          type: string
+          description: Names user
+          example: Josue Elliot
+        surNames:
+          type: string
+          description: Surname user
+          example: Rivera Flores
+        documentType:
+          type: string
+          description: Document type.
+          example: DNI
+        documentNumber:
+          type: string
+          description: Document number
+          minLength: 8
+          maxLength: 8
+          example: "76256325"
+      xml:
+        name: User
+    Error:
+      type: object
+      properties:
+        code:
+          description: Error code
+          type: string
+        status:
+          description: http status
+          type: integer
+          format: int32
+        type:
+          type: string
+          description: Type of error
+        message:
+          type: string
+          description: Message of error

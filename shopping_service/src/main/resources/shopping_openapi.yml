@@ -73,7 +73,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /user/{id}:
+  /shopping/{id}:
     put:
       tags:
         - shopping
@@ -190,73 +190,158 @@ paths:
 components:
   schemas:
     ShoppingRequest:
-      required:
-        - names
-        - surNames
-        - userName
-        - userStatus
-        - password
       type: object
+      required:
+        - providerDocument
+        - detail
+        - userId
       properties:
-        names:
+        providerName:
           type: string
-          description: Names of user
+          description: Customer names
           example: Josue Elliot
-        surNames:
+        providerDocument:
           type: string
-          description: Surname of user
-          example: Rivera Flores
-        userName:
+          description: provider document number
+          example: 75265896
+        allocateAmount:
+          type: number
+          format: double
+          description: Allocated Amount
+          example: 400
+        refundAmount:
+          type: number
+          format: double
+          description: Reund Amount
+          example: 25.30
+        paymentType:
           type: string
-          description: user for login
-          example: josueelliot
-        documentType:
-          type: string
-          description: Document type
-          example: DNI
-        documentNumber:
-          type: string
-          description: Document number
-          minLength: 8
-          maxLength: 8
-          pattern: ^\d+$
-          example: "76256325"
-        address:
-          type: string
-          description: User address
-          example: Av. La republica
-        phone:
-          type: string
-          description: phone
-          minLength: 9
-          maxLength: 9
-          pattern: ^\d+$
-          example: "935652458"
-        email:
-          type: string
-          description: email
-          format: email
-          example: josueelliot@hotmail.com
-        role:
-          type: string
-          description: rol the user
+          default: EFECTIVO
+          example: EFECTIVO
           enum:
-            - admin
-            - user
-          example: admin
-        password:
+            - EFECTIVO
+            - TARJETA
+            - TRANFERENCIA
+          description: Payment Type
+        shoppingStatus:
           type: string
-          description: password of user
-          example: 'ElliottR25/**'
-          #pattern: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$
-        userStatus:
-          type: integer
-          description: User Status
-          format: int32
-          example: 1
+          description: Sale Status
+          default: PENDING
+          example: COMPLETE
+          enum:
+            - PENDING
+            - COMPLETE
+            - CANCELED
+        priceFinal:
+          type: number
+          format: double
+          description: Price of the shopping
+          example: 128.60
+        userId:
+          type: string
+          description: user identifier
+          example: 63ab4d5b259e366938611208
+        detail:
+          type: array
+          description: detail of shopping
+          items:
+            $ref: '#/components/schemas/Detail'
       xml:
         name: ShoppingRequest
+
     ShoppingResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 50
+          example: 63ab4d5b259e366938611208
+        providerName:
+          type: string
+          description: Customer names
+          example: Josue Elliot
+        providerDocument:
+          type: string
+          description: provider document number
+          example: 75265896
+        allocateAmount:
+          type: number
+          format: double
+          description: Allocated Amount
+          example: 400
+        refundAmount:
+          type: number
+          format: double
+          description: Reund Amount
+          example: 25.30
+        paymentType:
+          type: string
+          default: EFECTIVO
+          example: EFECTIVO
+          enum:
+            - EFECTIVO
+            - TARJETA
+            - TRANFERENCIA
+          description: Payment Type
+        priceFinal:
+          type: number
+          format: double
+          description: Price of the shopping
+          example: 128.60
+        shoppingStatus:
+          type: string
+          description: Sale Status
+          default: PENDING
+          example: COMPLETE
+          enum:
+            - PENDING
+            - COMPLETE
+            - CANCELED
+        user:
+          $ref: '#/components/schemas/User'
+        detail:
+          type: array
+          items:
+            $ref: '#/components/schemas/Detail'
+      xml:
+        name: ShoppingResponse
+    Detail:
+      type: object
+      properties:
+        productName:
+          type: string
+          description: Name of product
+          example: Agua Cielo
+        productCode:
+          type: string
+          description: Code of product
+          example: "524AF"
+        description:
+          type: string
+          description: Description of product
+          example: Agua de mesa sin gas
+        price:
+          type: number
+          format: double
+          description: price for product
+          example: 2.60
+        quantities:
+          type: number
+          description: product quantity
+          example: 5
+        presentation:
+          type: string
+          description: presentation or version of the product
+          example: Unit
+        subTotal:
+          type: number
+          format: double
+          description: price for product
+          example: 28.60
+      xml:
+        name: Detail
+    User:
       type: object
       properties:
         id:
@@ -272,10 +357,6 @@ components:
           type: string
           description: Surname user
           example: Rivera Flores
-        userName:
-          type: string
-          description: user for login
-          example: josueelliot
         documentType:
           type: string
           description: Document type.
@@ -286,32 +367,8 @@ components:
           minLength: 8
           maxLength: 8
           example: "76256325"
-        address:
-          type: string
-          description: User address
-          example: Av. La republica
-        phone:
-          type: string
-          description: phone
-          example: "940000000"
-        email:
-          type: string
-          description: email
-          example: josue_elliot@hotmail.com
-        role:
-          type: string
-          description: rol the user
-          enum:
-            - admin
-            - user
-          example: admin
-        userStatus:
-          type: integer
-          description: User Status
-          format: int32
-          example: 1
       xml:
-        name: ShoppingResponse
+        name: User
     Error:
       type: object
       properties:
