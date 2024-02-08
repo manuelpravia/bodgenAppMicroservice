@@ -1,0 +1,13 @@
+
+spring:
+  application:
+    name: user-service
+  cloud:
+    config:
+      uri: http://localhost:8888
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/bodgen
+management:
+  security:
+    enable: false

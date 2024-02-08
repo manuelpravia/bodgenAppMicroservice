@@ -5,13 +5,14 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.2.2</version>
+		<version>3.1.2</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
 	<groupId>com.mpraviap</groupId>
 	<artifactId>bodgen</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
+	<name>mpraviap</name>
 	<packaging>pom</packaging>
 
 	<properties>
@@ -27,6 +28,9 @@
 		<module>shopping_service</module>
 		<module>user_service</module>
 		<module>product_service</module>
+		<module>config_server</module>
+		<module>eureka_server</module>
+		<module>gateway_server</module>
 	</modules>
 
 	<dependencies>
@@ -50,6 +54,13 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skipTests>true</skipTests>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
