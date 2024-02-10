@@ -5,22 +5,26 @@ import com.mpraviap.sales_service.application.dto.SaleRequestDto;
 import com.mpraviap.sales_service.application.dto.SaleResponseDto;
 import com.mpraviap.sales_service.application.mapper.SaleServiceMapper;
 import com.mpraviap.sales_service.application.service.SaleService;
+import com.mpraviap.sales_service.client.api.UserApi;
 import com.mpraviap.sales_service.domain.model.Sale;
 import com.mpraviap.sales_service.domain.repository.SaleRepository;
 import com.mpraviap.sales_service.shared.exception.BusinessException;
 import com.mpraviap.sales_service.shared.exception.RequestException;
 import com.mpraviap.sales_service.shared.util.Enum.EnumUtil;
 import com.mpraviap.sales_service.shared.util.constant.Constant;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class SaleserviceImpl implements SaleService {
 
@@ -29,27 +33,45 @@ public class SaleserviceImpl implements SaleService {
     @Autowired
     private SaleServiceMapper saleServiceMapper;
 
-    @Override
-    public Mono<SaleResponseDto> getSaleById(String saleId) {
+    @Autowired
+    private UserApi userApi;
 
-        return Mono.just(saleId)
-                .flatMap(saleRepository::findById)
+    @Override
+    public Mono<SaleResponseDto> getSaleById(String saleId, ServerWebExchange exchange) {
+
+        return saleRepository.findById(saleId)
                 .filter(Objects::nonNull)
-                .map(saleServiceMapper::toSaleResponseDto)
+                .flatMap(sale -> userApi.getUserById(sale.getUserId(), exchange)
+                        .map(ResponseEntity::getBody)
+                        .map(userResponse -> {
+                            SaleResponseDto saleResponseDto = saleServiceMapper.toSaleResponseDto(sale);
+                            saleResponseDto.setUser(saleServiceMapper.toUserDto(userResponse));
+                            return saleResponseDto;
+                        })
+                        .switchIfEmpty(Mono.just(saleServiceMapper.toSaleResponseDto(sale))))
                 .switchIfEmpty(Mono.error(new RequestException("OB0004", Constant.OBJECT_NOT_FOUND)));
+
     }
 
     @Override
-    public Flux<SaleResponseDto> getSales() {
+    public Flux<SaleResponseDto> getSales(ServerWebExchange exchange) {
+
 
         return saleRepository.findAll()
                 .filter(Objects::nonNull)
-                .map(saleServiceMapper::toSaleResponseDto)
+                .flatMap(sale -> userApi.getUserById(sale.getUserId(), exchange)
+                        .map(ResponseEntity::getBody)
+                        .map(userResponse -> {
+                            SaleResponseDto saleResponseDto = saleServiceMapper.toSaleResponseDto(sale);
+                            saleResponseDto.setUser(saleServiceMapper.toUserDto(userResponse));
+                            return saleResponseDto;
+                        })
+                        .switchIfEmpty(Mono.just(saleServiceMapper.toSaleResponseDto(sale))))
                 .switchIfEmpty(Mono.error(new RequestException("OB0004", Constant.OBJECT_NOT_FOUND)));
     }
 
     @Override
-    public Mono<SaleResponseDto> saveSale(SaleRequestDto saleRequestDto) {
+    public Mono<SaleResponseDto> saveSale(SaleRequestDto saleRequestDto, ServerWebExchange exchange) {
 
         return saleRepository.findSaleBySaleCode(saleRequestDto.getSaleCode())
                 .map(Optional::of)
@@ -58,13 +80,37 @@ public class SaleserviceImpl implements SaleService {
                 .flatMap(sale -> this.calculateSaleAmount(saleRequestDto))
                 .map(saleServiceMapper::toSale)
                 .flatMap(saleRepository::save)
-                .map(saleServiceMapper::toSaleResponseDto)
+                .flatMap(sale -> userApi.getUserById(sale.getUserId(), exchange)
+                        .map(ResponseEntity::getBody)
+                        .map(userResponse -> {
+                            SaleResponseDto saleResponseDto = saleServiceMapper.toSaleResponseDto(sale);
+                            saleResponseDto.setUser(saleServiceMapper.toUserDto(userResponse));
+                            return saleResponseDto;
+                        })
+                        .switchIfEmpty(Mono.just(saleServiceMapper.toSaleResponseDto(sale))))
                 .switchIfEmpty(Mono.error(new BusinessException("OB0006", HttpStatus.CONFLICT, Constant.OBJECT_EXIST)));
     }
 
     @Override
-    public Mono<SaleResponseDto> updateSale(SaleRequestDto saleRequestDto, String saleId) {
-        return null;
+    public Mono<SaleResponseDto> updateSale(SaleRequestDto saleRequestDto, String saleId, ServerWebExchange exchange) {
+
+        return saleRepository.findById(saleId)
+                .map(Optional::of)
+                .defaultIfEmpty(Optional.empty())
+                .filter(Objects::nonNull)
+                .map(Optional::get)
+                .flatMap(sale -> this.calculateSaleAmount(saleRequestDto)
+                        .map(saleRequestDto1 -> saleServiceMapper.toSale(sale, saleRequestDto1)))
+                .flatMap(saleRepository::save)
+                .flatMap(sale -> userApi.getUserById(sale.getUserId(), exchange)
+                        .map(ResponseEntity::getBody)
+                        .map(userResponse -> {
+                            SaleResponseDto saleResponseDto = saleServiceMapper.toSaleResponseDto(sale);
+                            saleResponseDto.setUser(saleServiceMapper.toUserDto(userResponse));
+                            return saleResponseDto;
+                        })
+                        .switchIfEmpty(Mono.just(saleServiceMapper.toSaleResponseDto(sale))))
+                .switchIfEmpty(Mono.error(new BusinessException("OB0006", HttpStatus.CONFLICT, Constant.OBJECT_EXIST)));
     }
 
     @Override

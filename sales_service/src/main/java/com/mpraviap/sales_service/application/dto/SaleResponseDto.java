@@ -16,5 +16,6 @@ public class SaleResponseDto {
     private String paymentType;
     private double priceFinal;
     private String saleStatus;
-    private List<DetailResponseDto> details;
+    private UserDto user;
+    private List<DetailResponseDto> detail;
 }

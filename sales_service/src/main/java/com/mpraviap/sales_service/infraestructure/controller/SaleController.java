@@ -39,7 +39,7 @@ public class SaleController implements SaleApi {
     public Mono<ResponseEntity<SaleResponse>> addSale(Mono<SaleRequest> saleRequest, ServerWebExchange exchange) {
 
         return saleRequest.map(saleRequestControllerMapper::toSaleRequestDto)
-                .flatMap(saleService::saveSale)
+                .flatMap(sale -> saleService.saveSale(sale, exchange))
                 .map(saleResponseControllerMapper::toSaleResponse)
                 .map(user -> new ResponseEntity<>(user, HttpStatus.CREATED))
                 .doFinally(user -> log.info("Fin de la operacion agregar proveedor"));
@@ -75,8 +75,7 @@ public class SaleController implements SaleApi {
     @Override
     public Mono<ResponseEntity<SaleResponse>> getSaleById(String id, ServerWebExchange exchange) {
 
-        return Mono.just(id)
-                .flatMap(saleService::getSaleById)
+        return saleService.getSaleById(id, exchange)
                 .map(saleResponseControllerMapper::toSaleResponse)
                 .map(ResponseEntity::ok)
                 .doFinally(user -> log.info("Fin de la operacion consultar proveedor por ID"));
@@ -93,7 +92,7 @@ public class SaleController implements SaleApi {
     @Override
     public Mono<ResponseEntity<Flux<SaleResponse>>> listSale(ServerWebExchange exchange) {
 
-        return Mono.just(saleService.getSales().map(saleResponseControllerMapper::toSaleResponse))
+        return Mono.just(saleService.getSales(exchange).map(saleResponseControllerMapper::toSaleResponse))
                 .map(user -> new ResponseEntity<>(user, HttpStatus.OK))
                 .doFinally(user -> log.info("Fin de la operacion consultar la lista de proveedores"));
     }
@@ -114,7 +113,7 @@ public class SaleController implements SaleApi {
     public Mono<ResponseEntity<SaleResponse>> updateSale(String id, Mono<SaleRequest> saleRequest, ServerWebExchange exchange) {
 
         return saleRequest.map(saleRequestControllerMapper::toSaleRequestDto)
-                .flatMap(providerRequestDto -> saleService.updateSale(providerRequestDto,id))
+                .flatMap(providerRequestDto -> saleService.updateSale(providerRequestDto,id, exchange))
                 .map(saleResponseControllerMapper::toSaleResponse)
                 .map(ResponseEntity::ok)
                 .doFinally(user -> log.info("Fin de la operacion actualizar proveedor"));

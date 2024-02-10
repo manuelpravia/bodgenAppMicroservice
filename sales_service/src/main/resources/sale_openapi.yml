@@ -319,7 +319,7 @@ components:
             - CANCELED
         user:
           $ref: '#/components/schemas/User'
-        Detail:
+        detail:
           type: array
           items:
             $ref: '#/components/schemas/DetailResponse'
@@ -353,6 +353,14 @@ components:
     DetailResponse:
       type: object
       properties:
+        productCode:
+          type: string
+          description: Product code
+          example: 63AB4D
+        productName:
+          type: string
+          description: Name of product
+          example: Agua Cielo
         quantities:
           type: number
           description: product quantity
@@ -362,45 +370,8 @@ components:
           format: double
           description: price for product
           example: 28.60
-        prducts:
-          $ref: '#/components/schemas/Product'
       xml:
         name: DetailResponse
-    Product:
-      type: object
-      properties:
-        id:
-          type: string
-          minLength: 1
-          maxLength: 50
-          example: 63ab4d5b259e366938611208
-        name:
-          type: string
-          description: Name of product
-          example: Agua Cielo
-        description:
-          type: string
-          description: Description of product
-          example: Agua de mesa sin gas
-        price:
-          type: number
-          format: double
-          description: price for product
-          example: 2.60
-        categoryId:
-          type: string
-          description: Category identifier
-          example: "65c193ea0d9d2c1696d3329c"
-        code:
-          type: string
-          description: Code of product
-          example: "524AF"
-        presentation:
-          type: string
-          description: presentation or version of the product
-          example: Unit, pakage o box
-      xml:
-        name: Product
     User:
       type: object
       properties:

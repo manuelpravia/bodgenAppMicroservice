@@ -112,6 +112,7 @@
 				<version>7.1.0</version>
 				<executions>
 					<execution>
+						<id>generate-sale-api</id>
 						<goals>
 							<goal>generate</goal>
 						</goals>
@@ -136,6 +137,34 @@
 							<packageName>com.mpraviap.sales_service</packageName>
 							<apiPackage>com.mpraviap.sales_service.api</apiPackage>
 							<modelPackage>com.mpraviap.sales_service.model</modelPackage>
+						</configuration>
+					</execution>
+					<execution>
+						<id>generate-user-api</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${basedir}/src/main/resources/client/user_openapi.yml</inputSpec>
+							<generatorName>spring</generatorName>
+							<configOptions>
+								<reactive>true</reactive>
+								<interfaceOnly>true</interfaceOnly>
+								<useJakartaEe>true</useJakartaEe>
+								<javaValidation>true</javaValidation>
+								<useSpringBoot3>true</useSpringBoot3>
+							</configOptions>
+							<typeMappings>
+								<typeMapping>OffsetDateTime=LocalDateTime</typeMapping>
+							</typeMappings>
+							<importMappings>
+								<importMapping>java.time.OffsetDateTime=java.time.LocalDateTime</importMapping>
+							</importMappings>
+
+							<generatorName>spring</generatorName>
+							<packageName>com.mpraviap.sales_service</packageName>
+							<apiPackage>com.mpraviap.sales_service.client.api</apiPackage>
+							<modelPackage>com.mpraviap.sales_service.client.model</modelPackage>
 						</configuration>
 					</execution>
 				</executions>

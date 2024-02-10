@@ -9,4 +9,11 @@ public class UserDto {
     private String surNames;
     private String documentType;
     private String  documentNumber;
+
+    private String userName;
+    private String address;
+    private String phone;
+    private String email;
+    private String role;
+    private Integer userStatus;
 }

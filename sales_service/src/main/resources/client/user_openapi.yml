@@ -1,0 +1,84 @@
+openapi: 3.0.3
+info:
+  title: Example API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8086
+paths:
+  /user/{userId}:
+    get:
+      summary: Obtener un usuario por su ID
+      operationId: getUserById
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Usuario encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '404':
+          description: Usuario no encontrado
+components:
+  schemas:
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 50
+          example: 63ab4d5b259e366938611208
+        names:
+          type: string
+          description: Names user
+          example: Josue Elliot
+        surNames:
+          type: string
+          description: Surname user
+          example: Rivera Flores
+        userName:
+          type: string
+          description: user for login
+          example: josueelliot
+        documentType:
+          type: string
+          description: Document type.
+          example: DNI
+        documentNumber:
+          type: string
+          description: Document number
+          minLength: 8
+          maxLength: 8
+          example: "76256325"
+        address:
+          type: string
+          description: User address
+          example: Av. La republica
+        phone:
+          type: string
+          description: phone
+          example: "940000000"
+        email:
+          type: string
+          description: email
+          example: josue_elliot@hotmail.com
+        role:
+          type: string
+          description: rol the user
+          enum:
+            - admin
+            - user
+          example: admin
+        userStatus:
+          type: integer
+          description: User Status
+          format: int32
+          example: 1
+      xml:
+        name: UserResponse
