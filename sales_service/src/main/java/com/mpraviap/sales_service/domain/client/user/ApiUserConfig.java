@@ -12,6 +12,12 @@ import reactor.core.publisher.Mono;
 @Configuration
 public class ApiUserConfig {
 
+    private final WebClient.Builder webclientBuilder;
+
+    public ApiUserConfig(WebClient.Builder webclientBuilder) {
+        this.webclientBuilder = webclientBuilder;
+    }
+
     @Bean
     public UserApi userApi(){
 
@@ -27,10 +33,10 @@ public class ApiUserConfig {
             @Override
             public Mono<ResponseEntity<UserResponse>> getUserById(String userId, ServerWebExchange exchange) {
 
-                WebClient webClient = WebClient.create("http://localhost:8086");
+                //WebClient webClient = WebClient.create("http://localhost:8086");
 
-                return webClient.get()
-                        .uri("/user/" + userId)
+                return webclientBuilder.build().get()
+                        .uri("lb://user-service/user/" + userId)
                         .retrieve()
                         .bodyToMono(UserResponse.class)
                         .map(userResponse -> {

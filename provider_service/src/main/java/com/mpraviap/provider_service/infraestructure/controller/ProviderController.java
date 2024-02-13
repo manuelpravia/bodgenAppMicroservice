@@ -7,6 +7,7 @@ import com.mpraviap.provider_service.model.ProviderRequest;
 import com.mpraviap.provider_service.model.ProviderResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,6 +15,10 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+/**
+ *
+ * @author manuelpravia
+ */
 @Slf4j
 @RestController
 public class ProviderController implements ProviderApi {
@@ -93,7 +98,7 @@ public class ProviderController implements ProviderApi {
      */
     @Override
     public Mono<ResponseEntity<Flux<ProviderResponse>>> listProvider(ServerWebExchange exchange) {
-
+        System.out.println(exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION));
         return Mono.just(providerService.getProviders().map(providerControllerMapper::toProviderResponse))
                 .map(user -> new ResponseEntity<>(user, HttpStatus.OK))
                 .doFinally(user -> log.info("Fin de la operacion consultar la lista de proveedores"));

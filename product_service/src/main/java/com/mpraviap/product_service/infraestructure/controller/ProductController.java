@@ -14,6 +14,10 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+/**
+ *
+ * @author manuelpravia
+ */
 @Slf4j
 @RestController
 public class ProductController implements ProductApi {
