@@ -16,6 +16,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -91,5 +92,18 @@ public class ProductServiceImpl implements ProductService {
                 .map(Product::getId)
                 .flatMap(productRepository::deleteById);
 
+    }
+
+    @Override
+    public Mono<Void> updateStockProduct(Map<String,Integer> mapProduct) {
+
+        return Flux.fromIterable(mapProduct.entrySet())
+                .flatMap(data -> productRepository.findProductByCode(data.getKey())
+                        .map(product ->{
+                            product.setStock(product.getStock() - data.getValue());
+                            return product;
+                        })
+                        .flatMap(productRepository::save).ignoreElement())
+                .then();
     }
 }

@@ -5,6 +5,8 @@ import com.mpraviap.product_service.application.dto.ProductResponseDto;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 public interface ProductService {
     Mono<ProductResponseDto> getProductById(String idUser);
 
@@ -15,4 +17,6 @@ public interface ProductService {
     Mono<ProductResponseDto> updateProduct(ProductRequestDto productRequestDto,String productId);
 
     Mono<Void> deleteProduct(String productId);
+
+    Mono<Void> updateStockProduct(Map<String,Integer> mapProduct);
 }

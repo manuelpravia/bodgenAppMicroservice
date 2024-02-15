@@ -8,6 +8,15 @@ spring:
   data:
     mongodb:
       uri: mongodb://localhost:27017/bodgen
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      retries: 1
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+
 management:
   security:
     enable: false
+

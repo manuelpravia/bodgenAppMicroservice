@@ -8,6 +8,13 @@ spring:
   data:
     mongodb:
       uri: mongodb://localhost:27017/bodgen
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: product-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
 management:
   security:
     enable: false

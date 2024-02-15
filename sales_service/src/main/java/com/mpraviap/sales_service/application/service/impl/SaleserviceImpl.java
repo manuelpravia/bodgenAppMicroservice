@@ -1,5 +1,6 @@
 package com.mpraviap.sales_service.application.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mpraviap.sales_service.application.dto.DetailRequestDto;
 import com.mpraviap.sales_service.application.dto.SaleRequestDto;
 import com.mpraviap.sales_service.application.dto.SaleResponseDto;
@@ -11,16 +12,20 @@ import com.mpraviap.sales_service.domain.repository.SaleRepository;
 import com.mpraviap.sales_service.shared.exception.BusinessException;
 import com.mpraviap.sales_service.shared.exception.RequestException;
 import com.mpraviap.sales_service.shared.util.Enum.EnumUtil;
+import com.mpraviap.sales_service.shared.util.JsonUtil;
 import com.mpraviap.sales_service.shared.util.constant.Constant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -35,6 +40,9 @@ public class SaleserviceImpl implements SaleService {
 
     @Autowired
     private UserApi userApi;
+
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     @Override
     public Mono<SaleResponseDto> getSaleById(String saleId, ServerWebExchange exchange) {
@@ -80,6 +88,7 @@ public class SaleserviceImpl implements SaleService {
                 .flatMap(sale -> this.calculateSaleAmount(saleRequestDto))
                 .map(saleServiceMapper::toSale)
                 .flatMap(saleRepository::save)
+                .flatMap(this::sendMessageToProduct)
                 .flatMap(sale -> userApi.getUserById(sale.getUserId(), exchange)
                         .map(ResponseEntity::getBody)
                         .map(userResponse -> {
@@ -141,5 +150,16 @@ public class SaleserviceImpl implements SaleService {
                     return  saleRequestDto;
                 });
 
+    }
+
+    private Mono<Sale> sendMessageToProduct(Sale sale){
+
+        return Mono.just(sale.getDetail())
+                .map(detailList ->{
+                    Map<String, Integer> products = new HashMap<>();
+                    detailList.forEach( detail -> products.put(detail.getProductCode(),detail.getQuantities()));
+                    this.kafkaTemplate.send("update_stock", JsonUtil.toJson(products));
+                    return sale;
+                } );
     }
 }
