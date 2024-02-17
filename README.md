@@ -23,6 +23,10 @@ Este proyecto está enfocado en la implementación de un sistema de compras y ve
 - **Programación Reactiva con WebFlux:** Implementación reactiva utilizada para mejorar la escalabilidad y la resiliencia de los microservicios.
 - **Docker:** Tecnología de contenerización utilizada para desplegar y gestionar los microservicios de forma eficiente.
 - **Resiliencia y Balanceador de Carga:** Implementación de patrones y herramientas para garantizar la resiliencia y el balanceo de carga en el sistema.
+- **OpenAPI:** Especificación utilizada para describir y documentar los servicios de la API REST.
+- **Lombok:** Biblioteca de Java que ayuda a reducir el código boilerplate en el desarrollo de Java.
+- **MapStruct:** Framework utilizado para mapear objetos de un tipo a otro de forma declarativa y fácil. 
+- **JUnit 5 y Mockito:** Utilizados para realizar pruebas unitarias en el proyecto.
 
 ## Ejecución del Proyecto
 

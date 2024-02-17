@@ -98,7 +98,7 @@ public class ProviderController implements ProviderApi {
      */
     @Override
     public Mono<ResponseEntity<Flux<ProviderResponse>>> listProvider(ServerWebExchange exchange) {
-        System.out.println(exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION));
+
         return Mono.just(providerService.getProviders().map(providerControllerMapper::toProviderResponse))
                 .map(user -> new ResponseEntity<>(user, HttpStatus.OK))
                 .doFinally(user -> log.info("Fin de la operacion consultar la lista de proveedores"));

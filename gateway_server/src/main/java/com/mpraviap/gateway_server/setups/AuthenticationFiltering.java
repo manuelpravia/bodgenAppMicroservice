@@ -53,6 +53,7 @@ public class AuthenticationFiltering extends AbstractGatewayFilterFactory<Authen
                     }
 
                     String token = authHeader.substring(BEARER_PREFIX.length());
+                    log.info(token);
                     return  webclientBuilder.build()
                             .get()
                             //.uri("http://keycloack/roles").header(HttpHeaders.AUTHORIZATION, parts[1])

@@ -71,8 +71,12 @@ public class UserController implements UserApi {
      */
     @Override
     public Mono<ResponseEntity<UserResponse>> getUserById(String id, ServerWebExchange exchange) {
-
+        log.info(exchange.getRequest().getHeaders().getFirst("Authorization"));
         return Mono.just(id)
+                .map(iden->{
+                    log.info(exchange.getRequest().getHeaders().getFirst("Authorization"));
+                    return iden;
+                })
                 .flatMap(userService::getUserById)
                 .map(userControllerMapper::toUserResponse)
                 .map(ResponseEntity::ok)

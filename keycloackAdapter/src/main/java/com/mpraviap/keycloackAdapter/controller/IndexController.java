@@ -76,6 +76,7 @@ public class IndexController {
     @GetMapping("/valid")
     public ResponseEntity<?> valid(@RequestHeader("Authorization") String authHeader) throws BussinesRuleException {
         try {
+            logger.info(authHeader);
             restService.checkValidity(authHeader);
             return ResponseEntity.ok(new HashMap (){{
                 put("is_valid", "true");

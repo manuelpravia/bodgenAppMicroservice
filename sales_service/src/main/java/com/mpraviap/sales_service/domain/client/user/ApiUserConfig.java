@@ -2,13 +2,16 @@ package com.mpraviap.sales_service.domain.client.user;
 
 import com.mpraviap.sales_service.client.api.UserApi;
 import com.mpraviap.sales_service.client.model.UserResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Configuration
 public class ApiUserConfig {
 
@@ -32,15 +35,16 @@ public class ApiUserConfig {
              */
             @Override
             public Mono<ResponseEntity<UserResponse>> getUserById(String userId, ServerWebExchange exchange) {
+                var token = exchange.getRequest().getHeaders().getFirst("Authorization");
 
-                //WebClient webClient = WebClient.create("http://localhost:8086");
-
-                return webclientBuilder.build().get()
+                return webclientBuilder.build()
+                        .get()
                         .uri("lb://user-service/user/" + userId)
+                        .header(HttpHeaders.AUTHORIZATION, token)
                         .retrieve()
                         .bodyToMono(UserResponse.class)
                         .map(userResponse -> {
-                            // Modificar la respuesta si es necesario
+
                             userResponse.email(userResponse.getEmail().toUpperCase());
                             return ResponseEntity.ok(userResponse);
                         })

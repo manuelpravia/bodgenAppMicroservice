@@ -21,6 +21,7 @@
 		<maven.compiler.target>17</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<dockerfile-maven-version>1.4.13</dockerfile-maven-version>
+		<spring-boot-maven-plugin.version>3.2.1</spring-boot-maven-plugin.version>
 	</properties>
 
 	<modules>
@@ -60,7 +61,7 @@
 					<skipTests>true</skipTests>
 				</configuration>
 			</plugin>
-			<plugin>
+			<!--<plugin>
 				<groupId>com.spotify</groupId>
 				<artifactId>dockerfile-maven-plugin</artifactId>
 				<version>${dockerfile-maven-version}</version>
@@ -81,7 +82,7 @@
 						<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
 					</buildArgs>
 				</configuration>
-			</plugin>
+			</plugin>-->
 		</plugins>
 	</build>
 

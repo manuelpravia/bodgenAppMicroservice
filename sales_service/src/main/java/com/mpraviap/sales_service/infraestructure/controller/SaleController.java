@@ -38,6 +38,7 @@ public class SaleController implements SaleApi {
     @Override
     public Mono<ResponseEntity<SaleResponse>> addSale(Mono<SaleRequest> saleRequest, ServerWebExchange exchange) {
 
+            log.info("Token llega gateway: " + exchange.getRequest().getHeaders().getFirst("Authorization"));
         return saleRequest.map(saleRequestControllerMapper::toSaleRequestDto)
                 .flatMap(sale -> saleService.saveSale(sale, exchange))
                 .map(saleResponseControllerMapper::toSaleResponse)
